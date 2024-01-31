@@ -1,3 +1,9 @@
+import SearchCard from "./search-card/SearchCard";
+
 export default function Home() {
-	return <main></main>;
+	return (
+		<main>
+			<SearchCard />
+		</main>
+	);
 }
