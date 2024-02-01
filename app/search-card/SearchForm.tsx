@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -20,6 +21,14 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
+import { format } from "date-fns";
+import { Calendar } from "@/components/ui/calendar";
+import {
+	Popover,
+	PopoverContent,
+	PopoverTrigger,
+} from "@/components/ui/popover";
+import { cn } from "@/lib/utils";
 
 const petArray = ["dog", "cat"];
 
@@ -36,6 +45,8 @@ const formSchema = z.object({
 });
 
 const SearchForm = () => {
+	const [date, setDate] = useState<Date>();
+
 	const form = useForm<z.infer<typeof formSchema>>({
 		resolver: zodResolver(formSchema),
 		defaultValues: {
@@ -56,7 +67,7 @@ const SearchForm = () => {
 					control={form.control}
 					name='location'
 					render={({ field }) => (
-						<FormItem>
+						<FormItem className='mb-4'>
 							<FormLabel>Lokalitet</FormLabel>
 							<FormControl>
 								<Input placeholder='Angi sted' {...field} />
@@ -69,7 +80,7 @@ const SearchForm = () => {
 					control={form.control}
 					name='petType'
 					render={({ field }) => (
-						<FormItem>
+						<FormItem className='mb-4'>
 							<FormLabel>Til hvem</FormLabel>
 							<FormControl>
 								<Select {...field}>
@@ -92,8 +103,27 @@ const SearchForm = () => {
 					render={({ field }) => (
 						<FormItem>
 							<FormLabel>Hvornår</FormLabel>
-							<FormControl>
-								<Input placeholder='Angi sted' {...field} />
+							<FormControl {...field}>
+								<Popover>
+									<PopoverTrigger asChild>
+										<Button
+											variant={"outline"}
+											className={cn(
+												"w-full justify-start text-left font-normal",
+												!date && "text-muted-foreground"
+											)}>
+											{date ? format(date, "PPP") : <span>Vælg en dato</span>}
+										</Button>
+									</PopoverTrigger>
+									<PopoverContent className='w-auto p-0'>
+										<Calendar
+											mode='single'
+											selected={date}
+											onSelect={setDate}
+											initialFocus
+										/>
+									</PopoverContent>
+								</Popover>
 							</FormControl>
 							<FormMessage />
 						</FormItem>
